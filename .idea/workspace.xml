@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ab6a7a67-c365-47b7-ae8e-26aee8345729" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/preferred-vcs.xml" afterPath="$PROJECT_DIR$/.idea/preferred-vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/t.py" afterPath="$PROJECT_DIR$/t.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/weibo.db" afterPath="$PROJECT_DIR$/weibo.db" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/weibo.py" afterPath="$PROJECT_DIR$/weibo.py" />
     </list>
     <ignored path="$PROJECT_DIR$/.idea/" />
@@ -20,11 +18,10 @@
       <file leaf-file-name="weibo.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/weibo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="232">
-              <caret line="300" column="22" lean-forward="true" selection-start-line="300" selection-start-column="22" selection-end-line="300" selection-end-column="22" />
+            <state relative-caret-position="80">
+              <caret line="187" column="44" lean-forward="false" selection-start-line="187" selection-start-column="44" selection-end-line="187" selection-end-column="44" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
-                <element signature="e#128#1382#0" expanded="false" />
                 <element signature="e#185#813#0" expanded="false" />
                 <element signature="e#1413#1773#0" expanded="false" />
                 <element signature="e#1818#1927#0" expanded="false" />
@@ -34,17 +31,24 @@
                 <element signature="e#3559#4406#0" expanded="false" />
                 <element signature="e#4445#5615#0" expanded="false" />
                 <element signature="e#4482#5014#0" expanded="false" />
-                <element signature="e#5664#7194#0" expanded="false" />
-                <element signature="e#7235#7362#0" expanded="false" />
-                <element signature="e#7445#8327#0" expanded="false" />
-                <element signature="e#7455#7987#0" expanded="false" />
-                <element signature="e#8368#8711#0" expanded="false" />
-                <element signature="e#8754#9083#0" expanded="false" />
-                <element signature="e#9135#9311#0" expanded="false" />
-                <element signature="e#9352#10470#0" expanded="false" />
-                <element signature="e#10515#11904#0" expanded="false" />
-                <element signature="e#11981#12210#0" expanded="false" />
+                <element signature="e#5843#6361#0" expanded="false" />
+                <element signature="e#7820#8702#0" expanded="false" />
+                <element signature="e#7830#8362#0" expanded="false" />
+                <element signature="e#8742#9214#0" expanded="false" />
+                <element signature="e#9255#10377#0" expanded="false" />
+                <element signature="e#10422#11864#0" expanded="false" />
+                <element signature="e#11941#12324#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="15170307370.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/15170307370.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="539" lean-forward="false" selection-start-line="0" selection-start-column="539" selection-end-line="0" selection-end-column="539" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -114,7 +118,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -127,6 +130,7 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -208,7 +212,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1299" height="743" extended-state="6" />
+    <frame x="77" y="27" width="1299" height="743" extended-state="6" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Debug Logs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -218,7 +222,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Execute Anonymous" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25775656" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26173428" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -238,7 +242,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="15" />
+      <option name="time" value="16" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -249,7 +253,6 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
-            <element signature="e#128#1382#0" expanded="false" />
             <element signature="e#185#813#0" expanded="false" />
             <element signature="e#1413#1773#0" expanded="false" />
             <element signature="e#1818#1927#0" expanded="false" />
@@ -259,107 +262,18 @@
             <element signature="e#3559#4406#0" expanded="false" />
             <element signature="e#4445#5615#0" expanded="false" />
             <element signature="e#4482#5014#0" expanded="false" />
-            <element signature="e#5664#7194#0" expanded="false" />
-            <element signature="e#7235#7362#0" expanded="false" />
-            <element signature="e#7445#8327#0" expanded="false" />
-            <element signature="e#7455#7987#0" expanded="false" />
-            <element signature="e#8368#8711#0" expanded="false" />
-            <element signature="e#8754#9083#0" expanded="false" />
-            <element signature="e#9135#9311#0" expanded="false" />
-            <element signature="e#9352#10470#0" expanded="false" />
-            <element signature="e#10515#11904#0" expanded="false" />
-            <element signature="e#11981#12210#0" expanded="false" />
+            <element signature="e#5843#6361#0" expanded="false" />
+            <element signature="e#7820#8702#0" expanded="false" />
+            <element signature="e#7830#8362#0" expanded="false" />
+            <element signature="e#8742#9214#0" expanded="false" />
+            <element signature="e#9255#10377#0" expanded="false" />
+            <element signature="e#10422#11864#0" expanded="false" />
+            <element signature="e#11941#12324#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/python_study/onlinencu/online.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/15170307370.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="539" lean-forward="false" selection-start-line="0" selection-start-column="539" selection-end-line="0" selection-end-column="539" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/t.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="1" column="16" lean-forward="false" selection-start-line="1" selection-start-column="16" selection-end-line="1" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/weibo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-            <element signature="e#128#1382#0" expanded="false" />
-            <element signature="e#185#813#0" expanded="false" />
-            <element signature="e#1413#1773#0" expanded="false" />
-            <element signature="e#1818#1927#0" expanded="false" />
-            <element signature="e#1963#2288#0" expanded="false" />
-            <element signature="e#2327#3493#0" expanded="false" />
-            <element signature="e#2528#3060#0" expanded="false" />
-            <element signature="e#3559#4406#0" expanded="false" />
-            <element signature="e#4445#5615#0" expanded="false" />
-            <element signature="e#4482#5014#0" expanded="false" />
-            <element signature="e#5664#7194#0" expanded="false" />
-            <element signature="e#7235#7362#0" expanded="false" />
-            <element signature="e#7445#8327#0" expanded="false" />
-            <element signature="e#7455#7987#0" expanded="false" />
-            <element signature="e#8368#8711#0" expanded="false" />
-            <element signature="e#8754#9083#0" expanded="false" />
-            <element signature="e#9135#9311#0" expanded="false" />
-            <element signature="e#9352#10470#0" expanded="false" />
-            <element signature="e#10515#11904#0" expanded="false" />
-            <element signature="e#11981#12210#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/python_study/onlinencu/online.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/15170307370.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="539" lean-forward="false" selection-start-line="0" selection-start-column="539" selection-end-line="0" selection-end-column="539" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/t.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="1" column="16" lean-forward="false" selection-start-line="1" selection-start-column="16" selection-end-line="1" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/python_study/onlinencu/online.py">
+    <entry file="file://$PROJECT_DIR$/t.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -375,7 +289,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/t.txt">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -383,7 +297,143 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/weibo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+            <element signature="e#185#813#0" expanded="false" />
+            <element signature="e#1413#1773#0" expanded="false" />
+            <element signature="e#1818#1927#0" expanded="false" />
+            <element signature="e#1963#2288#0" expanded="false" />
+            <element signature="e#2327#3493#0" expanded="false" />
+            <element signature="e#2528#3060#0" expanded="false" />
+            <element signature="e#3559#4406#0" expanded="false" />
+            <element signature="e#4445#5615#0" expanded="false" />
+            <element signature="e#4482#5014#0" expanded="false" />
+            <element signature="e#5843#6361#0" expanded="false" />
+            <element signature="e#7820#8702#0" expanded="false" />
+            <element signature="e#7830#8362#0" expanded="false" />
+            <element signature="e#8742#9214#0" expanded="false" />
+            <element signature="e#9255#10377#0" expanded="false" />
+            <element signature="e#10422#11864#0" expanded="false" />
+            <element signature="e#11941#12324#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/python_study/onlinencu/online.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/15170307370.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="539" lean-forward="false" selection-start-line="0" selection-start-column="539" selection-end-line="0" selection-end-column="539" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/t.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="1" column="16" lean-forward="false" selection-start-line="1" selection-start-column="16" selection-end-line="1" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/weibo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+            <element signature="e#185#813#0" expanded="false" />
+            <element signature="e#1413#1773#0" expanded="false" />
+            <element signature="e#1818#1927#0" expanded="false" />
+            <element signature="e#1963#2288#0" expanded="false" />
+            <element signature="e#2327#3493#0" expanded="false" />
+            <element signature="e#2528#3060#0" expanded="false" />
+            <element signature="e#3559#4406#0" expanded="false" />
+            <element signature="e#4445#5615#0" expanded="false" />
+            <element signature="e#4482#5014#0" expanded="false" />
+            <element signature="e#5843#6361#0" expanded="false" />
+            <element signature="e#7820#8702#0" expanded="false" />
+            <element signature="e#7830#8362#0" expanded="false" />
+            <element signature="e#8742#9214#0" expanded="false" />
+            <element signature="e#9255#10377#0" expanded="false" />
+            <element signature="e#10422#11864#0" expanded="false" />
+            <element signature="e#11941#12324#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/python_study/onlinencu/online.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/15170307370.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="539" lean-forward="false" selection-start-line="0" selection-start-column="539" selection-end-line="0" selection-end-column="539" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/t.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="1" column="16" lean-forward="false" selection-start-line="1" selection-start-column="16" selection-end-line="1" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/python_study/onlinencu/online.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/t.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="17" lean-forward="true" selection-start-line="0" selection-start-column="17" selection-end-line="0" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/15282343727.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/t.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -399,21 +449,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/weibo.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="232">
-          <caret line="300" column="22" lean-forward="true" selection-start-line="300" selection-start-column="22" selection-end-line="300" selection-end-column="22" />
+        <state relative-caret-position="80">
+          <caret line="187" column="44" lean-forward="false" selection-start-line="187" selection-start-column="44" selection-end-line="187" selection-end-column="44" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
-            <element signature="e#128#1382#0" expanded="false" />
             <element signature="e#185#813#0" expanded="false" />
             <element signature="e#1413#1773#0" expanded="false" />
             <element signature="e#1818#1927#0" expanded="false" />
@@ -423,16 +464,13 @@
             <element signature="e#3559#4406#0" expanded="false" />
             <element signature="e#4445#5615#0" expanded="false" />
             <element signature="e#4482#5014#0" expanded="false" />
-            <element signature="e#5664#7194#0" expanded="false" />
-            <element signature="e#7235#7362#0" expanded="false" />
-            <element signature="e#7445#8327#0" expanded="false" />
-            <element signature="e#7455#7987#0" expanded="false" />
-            <element signature="e#8368#8711#0" expanded="false" />
-            <element signature="e#8754#9083#0" expanded="false" />
-            <element signature="e#9135#9311#0" expanded="false" />
-            <element signature="e#9352#10470#0" expanded="false" />
-            <element signature="e#10515#11904#0" expanded="false" />
-            <element signature="e#11981#12210#0" expanded="false" />
+            <element signature="e#5843#6361#0" expanded="false" />
+            <element signature="e#7820#8702#0" expanded="false" />
+            <element signature="e#7830#8362#0" expanded="false" />
+            <element signature="e#8742#9214#0" expanded="false" />
+            <element signature="e#9255#10377#0" expanded="false" />
+            <element signature="e#10422#11864#0" expanded="false" />
+            <element signature="e#11941#12324#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -145,8 +145,13 @@ class WeiBo(object):
         return datas
 
     def get_personal_weibo(self, uid):
+        '''
+        通过uid访问博主主页获取主页containerid，
+        通过主页containerid获取微博containerid
+        :param uid:
+        :return datas:
+        '''
         st = self.get_st()
-        containerid = self.get_containerid()
         headers = {'Host': 'm.weibo.cn',
                     'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -155,27 +160,32 @@ class WeiBo(object):
                     'Referer': 'https://m.weibo.cn/',
                     'Connection': 'close',
                     'Upgrade-Insecure-Requests': '1'}
-        url = 'https://m.weibo.cn/api/container/getIndex'
-        params = {'uid': uid, 'lunicode': '20000174', 'type': 'uid', 'value': uid, 'containerid': containerid}
-        r = self.s.get(url, headers=headers, params=params, cookies=self.cookies)
-        start = re.search('containerid', str(r.json()['userInfo'])).span()[1] + 1
-        end = re.search('containerid', str(r.json()['userInfo'])).span()[1] + 17
-        containerid = str(r.json()['userInfo'])[start:end]
+        first_containerid_url = 'https://m.weibo.cn/u/%s' %uid
+        r = self.s.get(first_containerid_url, headers=headers, cookies=self.cookies)
+        cookie = r.headers['Set-Cookie']
+        start = re.search('fid', cookie).span()[1] + 3
+        end = re.search('fid', cookie).span()[1] + 19
+        containerid = cookie[start:end]
+        params = {'type': 'uid', 'value': uid, 'containerid': containerid}
+        second_containerid_url = 'https://m.weibo.cn/api/container/getIndex'
+        r2 = self.s.get(second_containerid_url, headers=headers, params=params, cookies=self.cookies)
+        containerid = r2.json()['tabsInfo']['tabs'][1]['containerid']
         params['containerid'] = containerid
-        r2 = self.s.get(url, headers=headers, params=params, cookies=self.cookies)
-        cards = r2.json()['cards']
+        r3 = self.s.get(second_containerid_url, headers=headers, params=params, cookies=self.cookies)
+        # print(r3.json())
+        cards = r3.json()['cards']
         datas = []
         for card in cards:
-            # print(card)
             if card['card_type'] == 9:
                 id = card['mblog']['id']
                 mid = card['mblog']['mid']
-                datas.append((uid, id, mid, st))
+                content = card['mblog']['text']
+                datas.append((uid, id, mid, st, content))
                 # print(data)
         return datas
 
     def make_data(self, data):
-        content = '@南昌大学生工162团支部'
+        content = '#食品青春#@南昌大学生工162团支部~测试测试~'
         data = {'id': data[1], 'mid': data[2], 'st': data[3], 'content': content}
         return data
 
@@ -200,39 +210,21 @@ class WeiBo(object):
             print('转发失败')
             return None
 
-    def dom_wbid(self, datas):
+    def dom_wbid(self, data):
         conn = sqlite3.connect('weibo.db')
         cur = conn.cursor()
-        for data in datas:
-            sql = 'INSERT INTO weibo (uid, wbid, mmid) values ("%s", "%s", "%s")' %\
-                    (data[0], data[1], data[2])
-            print(sql)
-            cur.execute(sql)
-            print('储存成功')
+        cur.execute('SELECT * FROM weibo WHERE wbid = "%s" ' % data[1])
+        if cur.fetchone():
+            print('该微博已存在于数据库')
+            return None
+        sql = 'INSERT INTO weibo (uid, wbid, mid) values ("%s", "%s", "%s")' %\
+                (data[0], data[1], data[2])
+        # print(sql)
+        cur.execute(sql)
+        print('储存成功')
         conn.commit()
         conn.close()
-
-    def search_wbid(self, data):
-        conn = sqlite3.connect('weibo.db')
-        cur = conn.cursor()
-        sql = 'SELECT * FROM weibo WHERE wbid = "%s"' % data[1]
-        print(sql)
-        cur.execute(sql)
-        # print(sql)
-        print(cur.fetchone)
-        wb = cur.fetchone()
-        if not wb:
-            return False
-        else:
-            return True
-
-    def forword_person_weibo(self, data):
-        if not self.search_wbid(data):
-            self.dom_wbid(data)
-            self.forword_weibo(data)
-            print('已存入数据库并转发')
-        else:
-            print('该微博以存在数据库中')
+        return True
 
     def get_containerid(self):
         headers = {'Host': 'm.weibo.cn',
@@ -248,9 +240,9 @@ class WeiBo(object):
         r = self.s.get(url, headers=headers, params=params, cookies=self.cookies)
         t = r.json()[0]
         cards = t['card_group']
-        print(cards)
+        # print(cards)
         for card in cards:
-            print(card)
+            # print(card)
             if card['card_type'] == 2:
                 apps = card['apps']
                 for app in apps:
@@ -260,7 +252,10 @@ class WeiBo(object):
                         return containerid
 
     def get_followed_people(self):
-        # 返回关注列表的id,名称
+        '''
+        get关注列表，返回我的关注列表
+        :return followeds:
+        '''
         containerid = self.get_containerid()
         headers = {'Host': 'm.weibo.cn',
                     'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
@@ -289,23 +284,26 @@ class WeiBo(object):
     def dom_followed_peopel(self, user): # user=(uid, screen_name)
         conn = sqlite3.connect('weibo.db')
         cur = conn.cursor()
-        cur.execute('INSERT INTO followed (uid, screen_name) values("%s", "%s")'% (user[0], user[1]))
+        cur.execute('SELECT * FROM followed WHERE uid = "%s"' % user[0])
+        if cur.fetchone():
+            print('已存在于数据库')
+            return None
+        cur.execute('INSERT INTO followed (uid, screen_name) values("%s", "%s")' % (user[0], user[1]))
         print('储存成功')
         conn.commit()
         conn.close()
 
 
 if __name__ == '__main__':
-    w = WeiBo()
-    users = w.get_followed_people()
+    w = WeiBo('15170307370', 'lzjlzj123')
+    '''users = w.get_followed_people()
     for user in users:
-        w.dom_followed_peopel(user)
-    '''datas = w.get_personal_weibo('6034824916')
-    print(datas)
+        w.dom_followed_peopel(user)'''
+    datas = w.get_personal_weibo('6034824916')
     for data in datas:
-        # print(data)
-        w.forword_weibo(data)
-        time.sleep(5)'''
+        if w.dom_wbid(data):
+            w.forword_weibo(data)
+            time.sleep(5)
 
 
 
