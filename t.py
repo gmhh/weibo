@@ -1,1 +1,1 @@
-print(int(19/10))
+print(u'\u200b\u200b\u200b')

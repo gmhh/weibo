@@ -2,6 +2,9 @@ import requests
 import time
 import re
 import sqlite3
+from bs4 import BeautifulSoup
+import threading
+import queue
 
 
 class WeiBo(object):
@@ -116,6 +119,10 @@ class WeiBo(object):
         return st
 
     def get_all_weibo(self):
+        '''
+        # 获取该帐号下所有微博
+        :return datas=(id, mid, st):
+        '''
         st = self.get_st()
         headers = {'Host': 'm.weibo.cn',
                 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
@@ -160,17 +167,22 @@ class WeiBo(object):
                     'Referer': 'https://m.weibo.cn/',
                     'Connection': 'close',
                     'Upgrade-Insecure-Requests': '1'}
-        first_containerid_url = 'https://m.weibo.cn/u/%s' %uid
+        first_containerid_url = 'https://m.weibo.cn/u/%s' % uid
         r = self.s.get(first_containerid_url, headers=headers, cookies=self.cookies)
         cookie = r.headers['Set-Cookie']
-        start = re.search('fid', cookie).span()[1] + 3
-        end = re.search('fid', cookie).span()[1] + 19
-        containerid = cookie[start:end]
-        params = {'type': 'uid', 'value': uid, 'containerid': containerid}
+        # print(cookie)
+        start = re.search('fid%3D100', cookie).span()[1] - 3
+        end = re.search('fid%3D100', cookie).span()[1] + 13
+        first_containerid = cookie[start:end]
+        # print(first_containerid)
+        params = {'type': 'uid', 'value': uid, 'containerid': first_containerid}
+        # print(params)
         second_containerid_url = 'https://m.weibo.cn/api/container/getIndex'
         r2 = self.s.get(second_containerid_url, headers=headers, params=params, cookies=self.cookies)
-        containerid = r2.json()['tabsInfo']['tabs'][1]['containerid']
-        params['containerid'] = containerid
+        # print(r2.json())
+        second_containerid = r2.json()['tabsInfo']['tabs'][1]['containerid']
+        params['containerid'] = second_containerid
+        # print(params)
         r3 = self.s.get(second_containerid_url, headers=headers, params=params, cookies=self.cookies)
         # print(r3.json())
         cards = r3.json()['cards']
@@ -179,17 +191,19 @@ class WeiBo(object):
             if card['card_type'] == 9:
                 id = card['mblog']['id']
                 mid = card['mblog']['mid']
-                content = card['mblog']['text']
+                text = card['mblog']['text']
+                content = BeautifulSoup(text, 'html.parser').text
                 datas.append((uid, id, mid, st, content))
                 # print(data)
+        # print(datas)
         return datas
 
-    def make_data(self, data):
+    def make_post_data(self, data):
         content = '#食品青春#@南昌大学生工162团支部~测试测试~'
         data = {'id': data[1], 'mid': data[2], 'st': data[3], 'content': content}
         return data
 
-    def forword_weibo(self, data): # data = id='',content=''mid=''&st=''
+    def forward_weibo(self, data): # post_data = id='',content=''mid=''&st=''
         headers = {'Host': 'm.weibo.cn',
                 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
                 'Accept': 'application/json, text/plain, */*',
@@ -199,12 +213,20 @@ class WeiBo(object):
                 'X-Requested-With': 'XMLHttpRequest',
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Connection': 'close'}
-        data = self.make_data(data)
+        post_data = self.make_post_data(data)
         # print(data)
         url = 'https://m.weibo.cn/api/statuses/repost'
-        r = self.s.post(url, headers=headers, data=data, cookies=self.cookies)
+        r = self.s.post(url, headers=headers, data=post_data, cookies=self.cookies)
         if r.json()['ok'] == 1:
-            print('转发成功')
+            print('转发成功,暂停30秒')
+            time.sleep(10)
+
+            conn = sqlite3.connect('weibo.db')
+            conn.execute('UPDATE weibo SET is_forward=1 WHERE wbid="%s"' % post_data['mid'])
+            conn.commit()
+            conn.close()
+            print('已将数据更新至数据库')
+            return True
         else:
             print(r.text)
             print('转发失败')
@@ -213,18 +235,34 @@ class WeiBo(object):
     def dom_wbid(self, data):
         conn = sqlite3.connect('weibo.db')
         cur = conn.cursor()
-        cur.execute('SELECT * FROM weibo WHERE wbid = "%s" ' % data[1])
-        if cur.fetchone():
-            print('该微博已存在于数据库')
-            return None
-        sql = 'INSERT INTO weibo (uid, wbid, mid) values ("%s", "%s", "%s")' %\
-                (data[0], data[1], data[2])
+        try:
+            cur.execute('SELECT * FROM weibo WHERE wbid = "%s"' % data[1])
+
+            if cur.fetchone():
+                print('该微博已存在于数据库')
+                return None
+        except:
+            print(data)
+        sql = 'INSERT INTO weibo (uid, wbid, mid, content, is_forward) values ("%s", "%s", "%s", "%s", %s)' %\
+                (data[0], data[1], data[2], data[4], 0)
         # print(sql)
-        cur.execute(sql)
-        print('储存成功')
-        conn.commit()
-        conn.close()
-        return True
+        try:
+            cur.execute(sql)
+            print('储存成功')
+            conn.commit()
+            conn.close()
+            return True
+        except:
+            return None
+
+    def forward_weibo_from_sql(self):
+        conn = sqlite3.connect('weibo.db')
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM weibo WHERE is_forward=0')
+        weibos = cur.fetchall()
+        for weibo in weibos:
+            data = (weibo[1], weibo[2], weibo[3], weibo[4])
+            self.forward_weibo(data)
 
     def get_containerid(self):
         headers = {'Host': 'm.weibo.cn',
@@ -293,17 +331,61 @@ class WeiBo(object):
         conn.commit()
         conn.close()
 
+    def uid_from_sqlite(self):
+        conn = sqlite3.connect('weibo.db')
+        cur = conn.cursor()
+        cur.execute('SELECT uid FROM followed')
+        us = cur.fetchall()
+        uids = []
+        for u in us:
+            uids.append(u[0])
+        return uids
+
+
+class MyThread(threading.Thread):
+    def __init__(self, func, args=()):
+        super(MyThread, self).__init__()
+        self.func = func
+        self.args = args
+
+    def run(self):
+        self.result = self.func(*self.args)
+
+    def get_result(self):
+        try:
+            return self.result
+        except:
+            return []
+
+
+def main():
+    w = WeiBo('15170307370', 'lzjlzj123')
+
+    '''uids = w.uid_from_sqlite()
+    q1 = queue.Queue()
+    for uid in uids:
+        q1.put(uid)
+    q2 = queue.Queue()
+    for i in range(q1.qsize()):
+        u = q1.get()
+        print(u)
+        t = MyThread(w.get_personal_weibo, (u,))
+        t.start()
+        t.join()
+        for data in t.get_result():
+            # print(data)
+            q2.put(data)
+    while not q2.empty():
+        weibo = q2.get()
+        print(weibo)
+        t = MyThread(w.dom_wbid, (weibo,))
+        t.start()
+        t.join()'''
+    while True:
+        w.forward_weibo_from_sql()
 
 if __name__ == '__main__':
-    w = WeiBo('15170307370', 'lzjlzj123')
-    '''users = w.get_followed_people()
-    for user in users:
-        w.dom_followed_peopel(user)'''
-    datas = w.get_personal_weibo('6034824916')
-    for data in datas:
-        if w.dom_wbid(data):
-            w.forword_weibo(data)
-            time.sleep(5)
+    main()
 
 
 
