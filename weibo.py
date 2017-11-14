@@ -4,7 +4,9 @@ import re
 import sqlite3
 from bs4 import BeautifulSoup
 import threading
+from mythread import MyThread
 import queue
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 
 class WeiBo(object):
@@ -214,13 +216,13 @@ class WeiBo(object):
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Connection': 'close'}
         post_data = self.make_post_data(data)
+        post_data['st'] = self.get_st()
         # print(data)
         url = 'https://m.weibo.cn/api/statuses/repost'
         r = self.s.post(url, headers=headers, data=post_data, cookies=self.cookies)
         if r.json()['ok'] == 1:
             print('转发成功,暂停30秒')
             time.sleep(10)
-
             conn = sqlite3.connect('weibo.db')
             conn.execute('UPDATE weibo SET is_forward=1 WHERE wbid="%s"' % post_data['mid'])
             conn.commit()
@@ -259,10 +261,14 @@ class WeiBo(object):
         conn = sqlite3.connect('weibo.db')
         cur = conn.cursor()
         cur.execute('SELECT * FROM weibo WHERE is_forward=0')
+        if not cur.fetchall():
+            print('数据库中已经没有更多数据了')
+            return 1
         weibos = cur.fetchall()
         for weibo in weibos:
             data = (weibo[1], weibo[2], weibo[3], weibo[4])
             self.forward_weibo(data)
+            return True
 
     def get_containerid(self):
         headers = {'Host': 'm.weibo.cn',
@@ -342,47 +348,32 @@ class WeiBo(object):
         return uids
 
 
-class MyThread(threading.Thread):
-    def __init__(self, func, args=()):
-        super(MyThread, self).__init__()
-        self.func = func
-        self.args = args
-
-    def run(self):
-        self.result = self.func(*self.args)
-
-    def get_result(self):
-        try:
-            return self.result
-        except:
-            return []
-
-
 def main():
     w = WeiBo('15170307370', 'lzjlzj123')
-
-    '''uids = w.uid_from_sqlite()
-    q1 = queue.Queue()
-    for uid in uids:
-        q1.put(uid)
-    q2 = queue.Queue()
-    for i in range(q1.qsize()):
-        u = q1.get()
-        print(u)
-        t = MyThread(w.get_personal_weibo, (u,))
-        t.start()
-        t.join()
-        for data in t.get_result():
-            # print(data)
-            q2.put(data)
-    while not q2.empty():
-        weibo = q2.get()
-        print(weibo)
-        t = MyThread(w.dom_wbid, (weibo,))
-        t.start()
-        t.join()'''
     while True:
-        w.forward_weibo_from_sql()
+        uids = w.uid_from_sqlite()
+        q1 = queue.Queue()
+        for uid in uids:
+            q1.put(uid)
+        q2 = queue.Queue()
+        for i in range(q1.qsize()):
+            u = q1.get()
+            print(u)
+            t = MyThread(w.get_personal_weibo, (u,))
+            t.start()
+            t.join()
+            for data in t.get_result():
+                # print(data)
+                q2.put(data)
+        while not q2.empty():
+            weibo = q2.get()
+            # print(weibo)
+            t = MyThread(w.dom_wbid, (weibo,))
+            t.start()
+            t.join()
+        while True:
+            print(w.forward_weibo_from_sql())
+
 
 if __name__ == '__main__':
     main()
