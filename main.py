@@ -7,6 +7,8 @@ import time
 
 
 w = WeiBo('15282343727', '162162162')
+
+
 def dom_weibo():
     uids = w.uid_from_sqlite()
     q1 = queue.Queue()

@@ -3,6 +3,7 @@ import time
 import re
 import sqlite3
 from bs4 import BeautifulSoup
+import random
 
 
 class WeiBo(object):
@@ -216,25 +217,30 @@ class WeiBo(object):
         # print(data)
         url = 'https://m.weibo.cn/api/statuses/repost'
         r = self.s.post(url, headers=headers, data=post_data, cookies=self.cookies)
-        if r.json()['ok'] == 1:
-            print('转发成功,暂停30秒')
-            time.sleep(10)
-
-            conn = sqlite3.connect('weibo.db')
-            conn.execute('UPDATE weibo SET is_forward=1 WHERE wbid="%s"' % post_data['mid'])
-            conn.commit()
-            conn.close()
-            print('已将数据更新至数据库')
-            return True
-        else:
-            print(r.text)
-            print('转发失败')
-            conn = sqlite3.connect('weibo.db')
-            conn.execute('UPDATE weibo SET is_forward=1 WHERE wbid="%s"' % post_data['mid'])
-            conn.commit()
-            conn.close()
-            print('已将数据更新至数据库')
-            return None
+        try:
+            if r.json()['ok'] == 1:
+                t = random.randint(60, 120)
+                print('转发成功,暂停%s秒' % t)
+                time.sleep(t)
+                conn = sqlite3.connect('weibo.db')
+                conn.execute('UPDATE weibo SET is_forward=1 WHERE wbid="%s"' % post_data['mid'])
+                conn.commit()
+                conn.close()
+                print('已将数据更新至数据库')
+                return True
+            else:
+                print(r.text)
+                print('转发失败,暂停30秒')
+                time.sleep(30)
+                conn = sqlite3.connect('weibo.db')
+                conn.execute('UPDATE weibo SET is_forward=1 WHERE wbid="%s"' % post_data['mid'])
+                conn.commit()
+                conn.close()
+                print('已将数据更新至数据库')
+                return None
+        except:
+            print('未知错误，暂停五分钟')
+            time.sleep(300)
 
     def dom_wbid(self, data):
         conn = sqlite3.connect('weibo.db')
@@ -329,11 +335,15 @@ class WeiBo(object):
         conn = sqlite3.connect('weibo.db')
         cur = conn.cursor()
         cur.execute('SELECT * FROM followed WHERE uid = "%s"' % user[0])
+        print(user[0])
         if cur.fetchone():
             print('已存在于数据库')
             return None
-        cur.execute('INSERT INTO followed (uid, screen_name) values("%s", "%s")' % (user[0], user[1]))
-        print('储存成功')
+        try:
+            cur.execute('INSERT INTO followed (uid, screen_name, description) values("%s", "%s", "%s")' % (user[0], user[1], user[2]))
+            print('储存成功')
+        except:
+            raise
         conn.commit()
         conn.close()
 
@@ -346,3 +356,97 @@ class WeiBo(object):
         for u in us:
             uids.append(u[0])
         return uids
+
+    def get_others_follow_and_fans(self, uid):
+        headers1 = {'Host': 'm.weibo.cn',
+                    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
+                    'Accept': 'application/json, text/plain, */*',
+                    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Referer': 'https://m.weibo.cn/p/index?containerid=231051_-_followersrecomm_-_6034824916&luicode=10000011&lfid=1005056034824916&featurecode=20000320',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Connection': 'close'}
+        headers2 = {'Host': 'm.weibo.cn',
+                    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
+                    'Accept': 'application/json, text/plain, */*',
+                    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Referer': 'https://m.weibo.cn/p/index?containerid=231051_-_fansrecomm_-_5827525376&\
+                    luicode=10000011&lfid=1005055827525376',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Connection': 'close'}
+        containerid = '100505' + uid
+        params = {'type': 'uid', 'value': uid, 'containerid': containerid}
+        url = 'https://m.weibo.cn/api/container/getIndex'
+        r = self.s.get(url, headers=headers1, params=params, cookies=self.cookies)
+        # print(r.url)
+        try:
+            f_url = 'https://m.weibo.cn/api/container/getIndex'
+            follows = re.search('\?(.*)', r.json()['userInfo']['follow_scheme']).group()
+            follows_url = f_url + follows.replace('recomm', '') + '&featurecode=20000320&type=uid&value=6034824916'
+            follow_count = r.json()['userInfo']['follow_count']
+            fans = re.search('\?(.*)',r.json()['userInfo']['fans_scheme']).group()
+            fans_url = url + fans.replace('recomm', '') + '&featurecode=20000320&type=uid&value=6034824916'
+            fans_count = r.json()['userInfo']['followers_count']
+            # print(r.json())
+        except:
+            print(r.url)
+            raise
+        users = []
+        for i in range(1, 20):
+            follow_url = follows_url
+            if i == 1:
+                r2 = self.s.get(follow_url, headers=headers2, cookies=self.cookies)
+                try:
+                    all_peopel = r2.json()['cards'][1]['card_group']
+                except:
+                    continue
+            else:
+                follow_url += '&page=' + str(i)
+                r2 = self.s.get(follow_url, headers=headers2, cookies=self.cookies)
+                try:
+                    all_peopel = r2.json()['cards'][0]['card_group']
+                except:
+                    print('没有更多内容')
+                    break
+            print(r2.url)
+            try:
+                for peopel in all_peopel:
+                    id = peopel['user']['id']
+                    screen_name = peopel['user']['screen_name']
+                    description = peopel['user']['description']
+                    users.append((id, screen_name, description))
+                print('关注的第%s页获取成功' % str(i))
+                time.sleep(10)
+            except:
+                raise
+        for i in range(1, 20):
+            fan_url = fans_url
+            if i == 1:
+                r3 = self.s.get(fan_url, headers=headers2, cookies=self.cookies)
+                try:
+                    all_peopel = r3.json()['cards'][1]['card_group']
+                except:
+                    continue
+            else:
+                fan_url += '&since_id=' + str(i)
+                r3 = self.s.get(fan_url, headers=headers2, cookies=self.cookies)
+                try:
+                    all_peopel = r3.json()['cards'][1]['card_group']
+                except:
+                    print('没有更多内容')
+                    break
+            print(r3.url)
+            try:
+                for peopel in all_peopel:
+                    id = peopel['user']['id']
+                    screen_name = peopel['user']['screen_name']
+                    description = peopel['user']['description']
+                    users.append((id, screen_name, description))
+                print('粉丝的第%s页获取成功' % str(i))
+                time.sleep(10)
+            except:
+                raise
+        return users
+
+
