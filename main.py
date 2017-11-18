@@ -6,7 +6,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import time
 
 
-w = WeiBo('15282343727', '162162162')
+w = WeiBo(username, password)
 
 
 def dom_weibo():
