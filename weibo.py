@@ -117,6 +117,46 @@ class WeiBo(object):
         st = r.text[start:end]
         return st
 
+    def get_containerid(self):
+        headers = {'Host': 'm.weibo.cn',
+                    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
+                    'Accept': 'application/json, text/javascript, */*; q=0.01',
+                    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Referer': 'https://m.weibo.cn/',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Connection': 'close'}
+        url = 'https://m.weibo.cn/home/me'
+        params = {'format': 'cards'}
+        r = self.s.get(url, headers=headers, params=params, cookies=self.cookies)
+        t = r.json()[0]
+        cards = t['card_group']
+        # print(cards)
+        for card in cards:
+            # print(card)
+            if card['card_type'] == 2:
+                apps = card['apps']
+                for app in apps:
+                    if app['title'] == '关注':
+                        containerid_url = app['scheme']
+                        containerid = containerid_url[22:38]
+                        return containerid
+
+    def make_post_data(self, d):
+        content = '@麦卖翁'
+        data = {'id': d[1], 'mid': d[2], 'st': '', 'content': content}
+        return data
+
+    def uid_from_sqlite(self):
+        conn = sqlite3.connect('weibo.db')
+        cur = conn.cursor()
+        cur.execute('SELECT uid FROM followed')
+        us = cur.fetchall()
+        uids = []
+        for u in us:
+            uids.append(u[0])
+        return uids
+
     def get_all_weibo(self):
         '''
         # 获取该帐号下所有微博
@@ -146,7 +186,7 @@ class WeiBo(object):
             if weibo['card_type'] == 9:
                 id = weibo['mblog']['id']
                 mid = weibo['mblog']['mid']
-                datas.append((id, mid, st))
+                datas.append((id, mid))
                 # print(data)
         return datas
 
@@ -157,7 +197,7 @@ class WeiBo(object):
         :param uid:
         :return datas:
         '''
-        st = self.get_st()
+        # st = self.get_st()
         headers = {'Host': 'm.weibo.cn',
                     'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -188,19 +228,14 @@ class WeiBo(object):
         datas = []
         for card in cards:
             if card['card_type'] == 9:
-                id = card['mblog']['id']
+                wbid = card['mblog']['id']
                 mid = card['mblog']['mid']
                 text = card['mblog']['text']
                 content = BeautifulSoup(text, 'html.parser').text
-                datas.append((uid, id, mid, st, content))
+                datas.append((uid, wbid, mid, content))
                 # print(data)
         # print(datas)
         return datas
-
-    def make_post_data(self, data):
-        content = '#食品青春#@南昌大学食品学院团委@南昌大学食品学院学生会'
-        data = {'id': data[1], 'mid': data[2], 'st': data[3], 'content': content}
-        return data
 
     def forward_weibo(self, data): # post_data = id='',content=''mid=''&st=''
         headers = {'Host': 'm.weibo.cn',
@@ -242,8 +277,8 @@ class WeiBo(object):
             print('未知错误，暂停五分钟')
             time.sleep(300)
 
-    def dom_wbid(self, data):
-        conn = sqlite3.connect('weibo.db')
+    def dom_wbid(self, data, sql):
+        conn = sqlite3.connect(sql)
         cur = conn.cursor()
         try:
             cur.execute('SELECT * FROM weibo WHERE wbid = "%s"' % data[1])
@@ -254,7 +289,7 @@ class WeiBo(object):
         except:
             print(data)
         sql = 'INSERT INTO weibo (uid, wbid, mid, content, is_forward) values ("%s", "%s", "%s", "%s", %s)' %\
-                (data[0], data[1], data[2], data[4], 0)
+                (data[0], data[1], data[2], data[3], 0)
         # print(sql)
         try:
             cur.execute(sql)
@@ -265,8 +300,8 @@ class WeiBo(object):
         except:
             return None
 
-    def forward_weibo_from_sql(self):
-        conn = sqlite3.connect('weibo.db')
+    def forward_weibo_from_sql(self, sql):
+        conn = sqlite3.connect(sql)
         cur = conn.cursor()
         cur.execute('SELECT * FROM weibo WHERE is_forward=0')
         weibos = cur.fetchall()
@@ -275,31 +310,6 @@ class WeiBo(object):
         for weibo in weibos:
             data = (weibo[1], weibo[2], weibo[3], weibo[4])
             self.forward_weibo(data)
-
-    def get_containerid(self):
-        headers = {'Host': 'm.weibo.cn',
-                    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
-                    'Accept': 'application/json, text/javascript, */*; q=0.01',
-                    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
-                    'Accept-Encoding': 'gzip, deflate',
-                    'Referer': 'https://m.weibo.cn/',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Connection': 'close'}
-        url = 'https://m.weibo.cn/home/me'
-        params = {'format': 'cards'}
-        r = self.s.get(url, headers=headers, params=params, cookies=self.cookies)
-        t = r.json()[0]
-        cards = t['card_group']
-        # print(cards)
-        for card in cards:
-            # print(card)
-            if card['card_type'] == 2:
-                apps = card['apps']
-                for app in apps:
-                    if app['title'] == '关注':
-                        containerid_url = app['scheme']
-                        containerid = containerid_url[22:38]
-                        return containerid
 
     def get_followed_people(self):
         '''
@@ -346,16 +356,6 @@ class WeiBo(object):
             raise
         conn.commit()
         conn.close()
-
-    def uid_from_sqlite(self):
-        conn = sqlite3.connect('weibo.db')
-        cur = conn.cursor()
-        cur.execute('SELECT uid FROM followed')
-        us = cur.fetchall()
-        uids = []
-        for u in us:
-            uids.append(u[0])
-        return uids
 
     def get_others_follow_and_fans(self, uid):
         headers1 = {'Host': 'm.weibo.cn',
@@ -449,4 +449,58 @@ class WeiBo(object):
                 raise
         return users
 
+    def get_lucky_draw_weibo(self):
+        headers = {'Host': 'm.weibo.cn',
+                    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0',
+                    'Accept': 'application/json, text/plain, */*',
+                    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    "Referer": "https://m.weibo.cn/p/100103type%3D1%26q%3D%E6%8A%BD%E5%A5%96?type=all&queryVal=\
+                     %E6%8A%BD%E5%A5%96&featurecode=20000320&lunicode=10000011&lfid=106003type%3D1&title=%E6%8A%\
+                     BD%E5%A5%96",
+                    'Connection': 'close'}
+        url = 'https://m.weibo.cn/api/container/getIndex'
+        params = {
+            "type": "all",
+            "queryVal": "微博抽奖平台",
+            "featurecode": "20000320",
+            "luicode": "10000011",
+            "lfid": "106003type=1",
+            "title": "微博抽奖平台",
+            "containerid": "100103type=1&q=微博抽奖平台"}
+        r = self.s.get(url, headers=headers, params=params, cookies=self.cookies)
+        try:
+            return r.json()
+        except:
+            return None
 
+    def dom_lucky_weibo(self):
+        # print(d['cards'])
+        # ws = d["cards"][4]["card_group"]
+        d = self.get_lucky_draw_weibo()
+        if not d:
+            print("未获取到可转发的微博")
+            return False
+        ws = []
+        for w in d['cards']:
+            try:
+                for card in w["card_group"]:
+                    ws.append(card)
+            except:
+                continue
+        # print(len(weibos))
+        weibos = []
+        # print(ws)
+        for weibo in ws:
+            try:
+                uid = weibo["mblog"]["user"]["id"]
+                wbid = weibo["mblog"]["id"]
+                mid = weibo["mblog"]["mid"]
+                content = weibo["mblog"]["text"]
+                if "微博抽奖平台" in content:
+                    weibos.append((uid, wbid, mid, content))
+            except:
+                continue
+        for wb in weibos:
+            self.dom_wbid(wb, "lucky_weibo.db")
