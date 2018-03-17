@@ -6,8 +6,8 @@ import time
 
 
 def main():
-    username = "15170307370"
-    password = "lzjlzj123"
+    username = your_username
+    password = your_password
     w = WeiBo(username, password)
     weibo_handle = WeiboHandle(username)
     user_info = w.get_user_basic_info()
