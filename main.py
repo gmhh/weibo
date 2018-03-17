@@ -1,13 +1,16 @@
-from weibo import WeiBo, WeiboHandle
-from mythread import MyThread
+from weibo import WeiBo
+from weibohandle import WeiboHandle
+from thread import MyThread
 from queue import Queue
-from random import choice, randint
-import time
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 
-def main():
-    username = your_username
-    password = your_password
+username = "username"
+password = "password"
+
+
+def get_and_dom():
+    print("cron start")
     w = WeiBo(username, password)
     weibo_handle = WeiboHandle(username)
     user_info = w.get_user_basic_info()
@@ -34,19 +37,29 @@ def main():
         t = MyThread(func=weibo_handle.dom_weibo, args=(weibo,))
         t.start()
         t.join()
-    contents = ["test1", "test2", "test3", "test4"]
-    
-    weibos = weibo_handle.get_weibo_from_database()
-    if not weibos:
+
+
+def forward():
+    print("cron start")
+    w = WeiBo(username, password)
+    weibo_handle = WeiboHandle(username)
+    weibo_content = weibo_handle.get_weibo_from_database()
+    if not weibo_content:
         print("暂无微博")
         exit
-    for weibo_content in weibos:
-        content = choice(contents)
-        w.forward_weibo(weibo_content, content)
-        weibo_handle.update_weibo(weibo_content)
-        time.sleep(randint(5, 10))
+    content = "test"  # "#食品青春# @南昌大学食品学院团委"
+    result = w.forward_weibo(weibo_content, content)
+    if not result:
+        print("转发失败")
+    weibo_handle.update_weibo(weibo_content)
+
+
+def main():
+    scheduler = BlockingScheduler()
+    scheduler.add_job(get_and_dom, 'cron', hour='0-8', minute='0-59/20')
+    scheduler.add_job(forward, 'cron', hour='9-23', minute='0-59/1')
+    scheduler.start()
 
 
 if __name__ == "__main__":
     main()
-    

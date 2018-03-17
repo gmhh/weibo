@@ -1,11 +1,7 @@
 import requests
 import time
-import re
-from bs4 import BeautifulSoup
-import random
 from dbmysql import WeiboDom, engine, WeiboFollow, WeiboUser
 from sqlalchemy.orm import sessionmaker
-from pymysql.err import InternalError
 
 
 class WeiBo(object):
@@ -165,9 +161,15 @@ class WeiBo(object):
         url = "https://m.weibo.cn/api/statuses/repost"
         data = {"id": weibo["weibo_content_id"], "content": content, "mid": weibo["mid"], "st": st}
         r = self.s.post(url, data=data, headers=self.headers, cookies=self.cookies)
-        if r.json().get("ok") == 1:
-            print("转发成功")
-            return True
+        try:
+            if r.json().get("ok") == 1:
+                print("转发成功")
+                return True
+            else:
+                return None
+        except Exception as e:
+            print(e)
+            return None
 
     def get_user_weibo(self, uid):  # 获取前十条微博
         url = "https://m.weibo.cn/api/container/getIndex?uid=" + str(uid) + "&luicode=20000174&type=uid&value=" + str(uid) + "&containerid=107603" + str(uid)
@@ -188,100 +190,38 @@ class WeiBo(object):
             weibos.append(tmp)
         return weibos
 
-
-
-
-class WeiboHandle(object):
-    def __init__(self, username):
-        self.Session = sessionmaker(bind=engine)
-        self.uid = self.get_user_id(username)
-    
-    def dom_weibo(self, weibo):
-        session = self.Session()
-        result = session.query(WeiboDom).filter_by(mid=weibo["mid"]).first()
-        if result:
-            print("已存在于数据库")
-            return None
+    def original_weibo(self, content, pic_id=None):
+        st = self.get_st()
+        data = {
+            "luicode": "10000011",
+            "lfid": "2304135827525376_ - _WEIBO_SECOND_PROFILE_MORE_WEIBO",
+            "featurecode": "20000320",
+            "content": content,
+            "st": st}
+        if pic_id:
+            data["picId"] = pic_id
+        url = "https://m.weibo.cn/api/statuses/update"
+        r = self.s.post(url, data=data, headers=self.headers, cookies=self.cookies)
         try:
-            w = WeiboDom(this_weibo_user_id=str(weibo["weibo_user_id"]), weibo_username=weibo["weibo_username"], weibo_content=weibo["weibo_content"], weibo_content_id=weibo["weibo_content_id"], mid=weibo["mid"], is_forward=0, weibo_user_id=self.uid)
-            session.add(w)
-            session.commit()
-            print("储存成功")
-            return 1
-        except Exception:
-            w = WeiboDom(this_weibo_user_id=str(weibo["weibo_user_id"]), weibo_username=weibo["weibo_username"], weibo_content=None, weibo_content_id=weibo["weibo_content_id"], mid=weibo["mid"], is_forward=0, weibo_user_id=self.uid)
-            print("微博内容无法插入")
-            return 1
-        finally:
-            session.close()
-
-    def dom_weibo_follow(self, follow):
-        session = self.Session()
-        result = session.query(WeiboFollow).filter_by(followed_weibo_id=follow["followed_weibo_id"], weibo_user_id=self.uid).first()
-        if result:
-            print("已存在于数据库")
-            return None
-        f = WeiboFollow(followed_weibo_id=follow["followed_weibo_id"], followed_weibo_name=follow["followed_weibo_name"], weibo_user_id=self.uid, is_used=0)
-        try:
-            session.add(f)
-            session.commit()
-            print("储存成功")
-            return 1
+            if r.json()["ok"] == 1:
+                print("发送成功")
+            else:
+                print("发送失败")
         except Exception as e:
             print(e)
             return None
-        finally:
-            session.close()
 
-    def dom_user_info(self, username, password, user):
-        session = self.Session()
-        result = session.query(WeiboUser).filter_by(weibo_id=user["user_id"]).first()
-        if result:
-            print("已存在于数据库")
-            return None
+    def upload_pic(self, pic_path):
+        headers = self.headers
+        headers.pop("Content-Type")  # 这里删除content-type让requests自己生成
+        url = "https://m.weibo.cn/api/statuses/uploadPic"
+        st = self.get_st()
+        files = {"pic": (pic_path, open(pic_path, "rb").read(), "image/jpeg")}
+        data = {"type": "json", "st": st}
+        r = self.s.post(url, data=data, files=files, headers=self.headers, cookies=self.cookies)
         try:
-            weibo_user = WeiboUser(weibo_username=username, weibo_password=password, weibo_id=user["user_id"], weibo_nickname=user["user_name"], weibo_count=user["weibo_count"])
-            session.add(weibo_user)
-            session.commit()
-            print("储存成功")
-            return 1
+            pic_id = r.json()["pic_id"]
+            return pic_id
         except Exception as e:
             print(e)
             return None
-        finally:
-            session.close()
-    
-    def get_followed_from_database(self):
-        session = self.Session()
-        follows = session.query(WeiboFollow).filter_by(weibo_user_id=self.uid).all()
-        uids = []
-        for follow in follows:
-            uids.append(follow.followed_weibo_id)
-        return uids
-
-    def get_weibo_from_database(self):
-        session = self.Session()
-        ws = session.query(WeiboDom).filter_by(weibo_user_id=self.uid, is_forward=0).all()
-        weibos = []
-        for w in ws:
-            weibo = {}
-            weibo["weibo_content_id"] = w.weibo_content_id
-            weibo["mid"] = w.mid
-            tmp = weibo.copy()
-            weibos.append(tmp)
-        
-        return weibos
-
-    def update_weibo(self, weibo):  # 用于转发微博后的将数据库的未转发改成已转发
-        session = self.Session()
-        w  = session.query(WeiboDom).filter_by(mid=weibo["mid"], weibo_user_id=self.uid).first()
-        w.is_forward = 1
-        print("已更新数据库")
-        session.commit()
-        session.close()
-        
-    def get_user_id(self, username):  # uid
-        session = self.Session()
-        weibo_user = session.query(WeiboUser).filter_by(weibo_username=username).first()
-        uid = weibo_user.weibo_id
-        return uid

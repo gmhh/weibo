@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, Integer, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
 
 
-engine = create_engine("mysql+pymysql://weibo:lzjlzj123@139.199.66.15:3306/weibodb?charset=utf8", pool_size=100)
+engine = create_engine("mysqluri", pool_size=100)
 Base = declarative_base(engine)
 
 
@@ -64,7 +64,6 @@ class WeiboDom(Base):
     weibo_user_id = Column(String(64), ForeignKey("weibo_user.weibo_id"))  # 这里的userid是转发账号的uid，不是这条微博所有者的uid
     is_forward = Column(Integer)
     
-
 
 if __name__ == "__main__":
     Base.metadata.drop_all(engine)
