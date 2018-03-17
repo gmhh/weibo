@@ -1,44 +1,52 @@
-from weibo import WeiBo
-import random
+from weibo import WeiBo, WeiboHandle
 from mythread import MyThread
-import queue
-from apscheduler.schedulers.blocking import BlockingScheduler
+from queue import Queue
+from random import choice, randint
 import time
 
 
-w = WeiBo("15170307370", "lzjlzj123")
-
-
-def dom_weibo():
-    uids = w.uid_from_sqlite()
-    q1 = queue.Queue()
+def main():
+    username = "15170307370"
+    password = "lzjlzj123"
+    w = WeiBo(username, password)
+    weibo_handle = WeiboHandle(username)
+    user_info = w.get_user_basic_info()
+    if weibo_handle.dom_user_info(username, password, user_info):
+        print("已将微博账号信息存入数据库")
+    follows = w.get_user_follows()
+    for follow in follows:
+        if weibo_handle.dom_weibo_follow(follow):
+            print("已将微博账号的关注信息存入数据库")
+    uids = weibo_handle.get_followed_from_database()
+    q1 = Queue()
+    q2 = Queue()
     for uid in uids:
         q1.put(uid)
-    q2 = queue.Queue()
     while not q1.empty():
-        u = q1.get()
-        print(u)
-        t = MyThread(w.get_personal_weibo, (u,))
+        uid = q1.get()
+        t = MyThread(func=w.get_user_weibo, args=(uid,))
         t.start()
         t.join()
         for data in t.get_result():
-            # print(data)
             q2.put(data)
     while not q2.empty():
         weibo = q2.get()
-        # print(weibo)
-        t = MyThread(w.dom_wbid, (weibo,))
+        t = MyThread(func=weibo_handle.dom_weibo, args=(weibo,))
         t.start()
         t.join()
+    contents = ["test1", "test2", "test3", "test4"]
+    
+    weibos = weibo_handle.get_weibo_from_database()
+    if not weibos:
+        print("暂无微博")
+        exit
+    for weibo_content in weibos:
+        content = choice(contents)
+        w.forward_weibo(weibo_content, content)
+        weibo_handle.update_weibo(weibo_content)
+        time.sleep(randint(5, 10))
 
 
-def main():
-    # time.sleep(10)
-    sched = BlockingScheduler()
-    sched.add_job(dom_weibo, 'interval', hours=2, id='dom')
-    sched.add_job(w.forward_weibo_from_sql, 'interval', hours=2, minutes=5, id='forward')
-    sched.start()
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
+    
