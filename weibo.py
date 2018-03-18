@@ -55,13 +55,13 @@ class WeiBo(object):
             return None
 
     def save_cookie(self, cookie):
-        with open('%s.txt' % self.username, 'w') as f:
+        with open('cookies/%s.txt' % self.username, 'w') as f:
              f.write(cookie)
         print('cookie保存成功')
 
     def get_cookie(self):
         try:
-            with open('%s.txt'%self.username, 'r') as f:
+            with open('cookies/%s.txt'%self.username, 'r') as f:
                 cookies = {}
                 for line in f.read().split(';'):
                     name, value = line.strip().split('=', 1)  # 1代表只分割一次
@@ -221,6 +221,7 @@ class WeiBo(object):
         r = self.s.post(url, data=data, files=files, headers=self.headers, cookies=self.cookies)
         try:
             pic_id = r.json()["pic_id"]
+            print("图片上传成功")
             return pic_id
         except Exception as e:
             print(e)

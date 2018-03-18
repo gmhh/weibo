@@ -3,11 +3,14 @@ import time
 from dbmysql import WeiboDom, engine, WeiboFollow, WeiboUser
 from sqlalchemy.orm import sessionmaker
 from random import choice
+from weibo import WeiBo
 
 
 class WeiboHandle(object):
-    def __init__(self, username):
+    def __init__(self, username, password):
         self.Session = sessionmaker(bind=engine)
+        self.username = username
+        self.password = password
         self.uid = self.get_user_id(username)
 
     def dom_weibo(self, weibo):
@@ -104,5 +107,12 @@ class WeiboHandle(object):
     def get_user_id(self, username):  # uid
         session = self.Session()
         weibo_user = session.query(WeiboUser).filter_by(weibo_username=username).first()
+        if not weibo_user:
+            w = WeiBo(self.username, self.password)
+            user_info = w.get_user_basic_info()
+            print(user_info)
+            if self.dom_user_info(self.username, self.password, user_info):
+                print("已将微博账号信息存入数据库")
+            weibo_user = session.query(WeiboUser).filter_by(weibo_username=username).first()
         uid = weibo_user.weibo_id
         return uid

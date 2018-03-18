@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, Integer, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
 
 
-engine = create_engine("mysqluri", pool_size=100)
+engine = create_engine("mysql+pymysql://weibo:lzjlzj123@139.199.66.15/weibodb?charset=utf8", pool_size=100)
 Base = declarative_base(engine)
 
 
@@ -63,7 +63,29 @@ class WeiboDom(Base):
     mid = Column(String(64))
     weibo_user_id = Column(String(64), ForeignKey("weibo_user.weibo_id"))  # 这里的userid是转发账号的uid，不是这条微博所有者的uid
     is_forward = Column(Integer)
+
+
+class OneWord(Base):
+    __tablename__ = "one_word"
+
+    id = Column(Integer, primary_key=True)
+    hitokoto = Column(Text)
+    word_type = Column(String(4))
+    word_from = Column(String(32))
+    creator = Column(String(32))
+    created_at = Column(String(64))
     
+
+class Food(Base):
+    __tablename__ = "food"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(128))
+    material = Column(Text)
+    food_img = Column(String(128))
+    food_url = Column(String(128))
+    is_used = Column(Integer)
+
 
 if __name__ == "__main__":
     Base.metadata.drop_all(engine)
