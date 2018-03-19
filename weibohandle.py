@@ -93,7 +93,8 @@ class WeiboHandle(object):
             weibo["mid"] = w.mid
             tmp = weibo.copy()
             weibos.append(tmp)
-
+        if not weibos:
+            return None
         return choice(weibos)
 
     def update_weibo(self, weibo):  # 用于转发微博后的将数据库的未转发改成已转发

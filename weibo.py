@@ -135,7 +135,8 @@ class WeiBo(object):
                 data = None
             if not data:
                 return None
-            follows = data["data"]["cards"] # 这里获取单页所有关注
+            # print(data)
+            follows = data.get("data").get("cards") # 这里获取单页所有关注
             if not follows:
                 continue
             
@@ -161,6 +162,7 @@ class WeiBo(object):
         url = "https://m.weibo.cn/api/statuses/repost"
         data = {"id": weibo["weibo_content_id"], "content": content, "mid": weibo["mid"], "st": st}
         r = self.s.post(url, data=data, headers=self.headers, cookies=self.cookies)
+        print(r.text)
         try:
             if r.json().get("ok") == 1:
                 print("转发成功")

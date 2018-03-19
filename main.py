@@ -4,6 +4,7 @@ from thread import MyThread
 from queue import Queue
 from apscheduler.schedulers.blocking import BlockingScheduler
 from one_word import weibo_extend
+from random import randint
 
 
 class time_deal():
@@ -14,11 +15,12 @@ class time_deal():
         self.weibo_handle = WeiboHandle(username, password)
 
     def get_and_dom(self):
-        print("cron start")
-        follows = self.w.get_user_follows()
-        for follow in follows:
-            if self.weibo_handle.dom_weibo_follow(follow):
-                print("已将微博账号的关注信息存入数据库")
+        # print("cron start")
+        # follows = self.w.get_user_follows()
+        # for follow in follows:
+        #    if self.weibo_handle.dom_weibo_follow(follow):
+        #        print("已将微博账号的关注信息存入数据库")
+        print("getting weibo from follows")
         uids = self.weibo_handle.get_followed_from_database()
         q1 = Queue()
         q2 = Queue()
@@ -42,8 +44,8 @@ class time_deal():
         weibo_content = self.weibo_handle.get_weibo_from_database()
         if not weibo_content:
             print("暂无微博")
-            exit
-        content = "test"  # "#食品青春# @南昌大学食品学院团委"
+            self.get_and_dom()
+        content = "#食品青春# @南昌大学食品学院团委"
         result = self.w.forward_weibo(weibo_content, content)
         if not result:
             print("转发失败")
@@ -85,10 +87,11 @@ class time_deal():
 
 def main():
     t = time_deal("15282343727", "162162162")
+    m = '0-59/' + str(randint(5,10))
     scheduler = BlockingScheduler()
-    scheduler.add_job(t.get_and_dom, 'cron', hour='0-6', minute='0-59/20')  # 储存
-    scheduler.add_job(t.forward, 'cron', hour='7-23', minute='0-59/2')  # 转发
-    scheduler.add_job(t.make_weibo, 'cron', hour=22, minute=1)  # 一言
+    # scheduler.add_job(t.get_and_dom, 'cron', hour='0-6', minute='0-59/20')  # 储存
+    scheduler.add_job(t.forward, 'cron', hour='0-23/2', minute=m)  # 转发
+    scheduler.add_job(t.make_weibo, 'cron', hour=18, minute=30)  # 一言
     scheduler.add_job(t.good_moring_evening, 'cron', args=(True, ), hour=6, minute=1) # 早安
     scheduler.add_job(t.good_moring_evening, 'cron', args=(False, ), hour=22, minute=1) # 晚安
     scheduler.add_job(t.mie_word, 'cron',hour=8, minute=1)  # 咩语
