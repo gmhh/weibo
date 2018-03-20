@@ -51,6 +51,7 @@ class WeiBo(object):
             self.save_cookie(r.headers['Set-Cookie'])
             return r.headers['Set-Cookie']
         else:
+            print(r.json())
             print('登录失败，尝试重新登录')
             return None
 
