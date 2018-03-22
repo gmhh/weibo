@@ -1,0 +1,6 @@
+q:
+ image: lzj/weibo
+ volumes:
+  - /home/ubuntu/weibo/:/app
+  - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+
