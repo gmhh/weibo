@@ -67,12 +67,16 @@ class time_deal():
     def good_moring_evening(self, moring=True):
         print("cron start")
         w  = WeiBo(self.username, self.password)
-        weather = weibo_extend.get_weather()
+        
         if moring:
+            weather = weibo_extend.get_weather(0)
             content = "#食品青春#【天气】早安！今天" + weather + " @南昌大学食品学院团委"
         else:
-            content = "#食品青春#【天气】晚安！" + " @南昌大学食品学院团委"
-        if weibo_extend.get_weibo_pic():
+            weather = weibo_extend.get_weather(1)
+            content = "#食品青春#【天气】晚安！明天" + " @南昌大学食品学院团委"
+        num = randint(0, 1001)
+        pic_url = "http://random-pic.oss-cn-hangzhou.aliyuncs.com/pc/" + str(num) + ".jpg"
+        if weibo_extend.get_weibo_pic(pic_url, "morning"):
             pic_id = w.upload_pic("pic/mie_word.jpg")
         w.original_weibo(content, pic_id)
 
@@ -81,8 +85,7 @@ class time_deal():
         w = WeiBo(self.username, self.password)
         c = weibo_extend.get_mie_word()
         content = "#食品青春#" + c + "  --《咩语》" + " @南昌大学食品学院团委"
-        if weibo_extend.get_weibo_pic():
-            pic_id = w.upload_pic("pic/mie_word.jpg")
+        pic_id = w.upload_pic("pic/mie_word.jpg")
         w.original_weibo(content, pic_id)
 
     def food(self):
@@ -92,6 +95,12 @@ class time_deal():
         content = "#食品青春#【美食推荐】" + c + "  @南昌大学食品学院团委"
         pic_id = w.upload_pic("pic/food.jpg")
         w.original_weibo(content, pic_id)
+    
+    def daily_new(self):
+        print("cron start")
+        w = WeiBo(self.username, self.password)
+        content = weibo_extend.get_daily_news()
+
 
 def main():
     t = time_deal("15282343727", "162162162")
