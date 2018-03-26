@@ -3,7 +3,7 @@ from weibohandle import WeiboHandle
 from thread import MyThread
 from queue import Queue
 from apscheduler.schedulers.blocking import BlockingScheduler
-from one_word import weibo_extend
+from one_word import *
 from random import randint
 
 
@@ -55,64 +55,25 @@ class time_deal():
             print("转发失败")
         weibo_handle.update_weibo(weibo_content)
 
-    def make_weibo(self):
+    def send_origin(self, mod_class_name, pic_name):
         print("cron start")
         w = WeiBo(self.username, self.password)
-        c = weibo_extend.get_one_word()
-        content = "#食品青春#【一言】" + c + "@南昌大学食品学院团委"
-        if weibo_extend.get_weibo_pic():
-            pic_id = w.upload_pic("pic/mie_word.jpg")
+        m = mod_class_name()
+        content = m.make_content()
+        pic_id = w.upload_pic("pic/%s.jpg" % pic_name)
         w.original_weibo(content, pic_id)
-    
-    def good_moring_evening(self, moring=True):
-        print("cron start")
-        w  = WeiBo(self.username, self.password)
-        
-        if moring:
-            weather = weibo_extend.get_weather(0)
-            content = "#食品青春#【天气】早安！今天" + weather + " @南昌大学食品学院团委"
-        else:
-            weather = weibo_extend.get_weather(1)
-            content = "#食品青春#【天气】晚安！明天" + " @南昌大学食品学院团委"
-        num = randint(0, 1001)
-        pic_url = "http://random-pic.oss-cn-hangzhou.aliyuncs.com/pc/" + str(num) + ".jpg"
-        if weibo_extend.get_weibo_pic(pic_url, "morning"):
-            pic_id = w.upload_pic("pic/mie_word.jpg")
-        w.original_weibo(content, pic_id)
-
-
-    def mie_word(self):
-        w = WeiBo(self.username, self.password)
-        c = weibo_extend.get_mie_word()
-        content = "#食品青春#" + c + "  --《咩语》" + " @南昌大学食品学院团委"
-        pic_id = w.upload_pic("pic/mie_word.jpg")
-        w.original_weibo(content, pic_id)
-
-    def food(self):
-        print("cron start")
-        w = WeiBo(self.username, self.password)
-        c = weibo_extend.get_food_from_database()
-        content = "#食品青春#【美食推荐】" + c + "  @南昌大学食品学院团委"
-        pic_id = w.upload_pic("pic/food.jpg")
-        w.original_weibo(content, pic_id)
-    
-    def daily_new(self):
-        print("cron start")
-        w = WeiBo(self.username, self.password)
-        content = weibo_extend.get_daily_news()
-
 
 def main():
-    t = time_deal("15282343727", "162162162")
-    m = '0-59/' + str(randint(5,10))
+    t = time_deal("15170307370", "lzjlzj123")
+    # m = '0-59/' + str(randint(5,10))
     scheduler = BlockingScheduler()
+    scheduler.add_job(t.send_origin, 'cron', args=(one_word, "one_word"), hour=13, minute=37)  # 一言
+    scheduler.add_job(t.send_origin, 'cron', args=(get_weather, "weather"), hour=13, minute=39)  # 天气
+    scheduler.add_job(t.send_origin, 'cron', args=(mie_word, "mie_word"), hour=13, minute=41)  # 咩语
+    scheduler.add_job(t.send_origin, 'cron', args=(recommend_food, "food"), hour=13, minute=43)  # 美食推荐
+    scheduler.add_job(t.send_origin, 'cron', args=(daily_news, "news"), hour=13, minute=45)  # 每日国际视野
     # scheduler.add_job(t.get_and_dom, 'cron', hour='0-6', minute='0-59/20')  # 储存
-    scheduler.add_job(t.forward, 'cron', hour='0-23/2', minute=m)  # 转发
-    scheduler.add_job(t.make_weibo, 'cron', hour=10, minute=20)  # 一言
-    scheduler.add_job(t.good_moring_evening, 'cron', args=(True, ), hour=6, minute=1) # 早安
-    scheduler.add_job(t.good_moring_evening, 'cron', args=(False, ), hour=22, minute=1) # 晚安
-    scheduler.add_job(t.mie_word, 'cron',hour=21, minute=17)  # 咩语
-    scheduler.add_job(t.food, 'cron', hour=11, minute=1) #美食推荐
+    # scheduler.add_job(t.forward, 'cron', hour='0-23/2', minute=m)  # 转发
     scheduler.start()
 
 
