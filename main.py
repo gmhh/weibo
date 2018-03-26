@@ -3,8 +3,8 @@ from weibohandle import WeiboHandle
 from thread import MyThread
 from queue import Queue
 from apscheduler.schedulers.blocking import BlockingScheduler
-from one_word import *
 from random import randint
+from origin import *
 
 
 class time_deal():
@@ -64,16 +64,17 @@ class time_deal():
         w.original_weibo(content, pic_id)
 
 def main():
-    t = time_deal("15170307370", "lzjlzj123")
-    # m = '0-59/' + str(randint(5,10))
+    t = time_deal("15282343727", "162162162")
+    m = '0-59/' + str(randint(5,10))
     scheduler = BlockingScheduler()
-    scheduler.add_job(t.send_origin, 'cron', args=(one_word, "one_word"), hour=13, minute=37)  # 一言
-    scheduler.add_job(t.send_origin, 'cron', args=(get_weather, "weather"), hour=13, minute=39)  # 天气
-    scheduler.add_job(t.send_origin, 'cron', args=(mie_word, "mie_word"), hour=13, minute=41)  # 咩语
-    scheduler.add_job(t.send_origin, 'cron', args=(recommend_food, "food"), hour=13, minute=43)  # 美食推荐
-    scheduler.add_job(t.send_origin, 'cron', args=(daily_news, "news"), hour=13, minute=45)  # 每日国际视野
-    # scheduler.add_job(t.get_and_dom, 'cron', hour='0-6', minute='0-59/20')  # 储存
-    # scheduler.add_job(t.forward, 'cron', hour='0-23/2', minute=m)  # 转发
+    scheduler.add_job(t.get_and_dom, 'cron', hour='0-6', minute='0-59/20')  # 储存
+    scheduler.add_job(t.forward, 'cron', hour='0-23/2', minute=m)  # 转发
+    scheduler.add_job(t.send_origin, 'cron', args=(one_word, "one_word"), hour=8, minute=1)  # 一言
+    scheduler.add_job(t.send_origin, 'cron', args=(get_weather, "weather"), hour=6, minute=1)  # 天气
+    scheduler.add_job(t.send_origin, 'cron', args=(mie_word, "mie_word"), hour=22, minute=1)  # 咩语
+    scheduler.add_job(t.send_origin, 'cron', args=(recommend_food, "food"), hour=11, minute=1)  # 美食推荐
+    scheduler.add_job(t.send_origin, 'cron', args=(daily_news, "news"), hour=9, minute=1)  # 每日国际视野
+    scheduler.add_job(t.send_origin, 'cron', args=(history_of_today, "news"), hour=10, minute=1)  # 历史上的今天
     scheduler.start()
 
 
