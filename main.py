@@ -55,10 +55,10 @@ class time_deal():
             print("转发失败")
         weibo_handle.update_weibo(weibo_content)
 
-    def send_origin(self, mod_class_name, pic_name):
+    def send_origin(self, mod_class_name, mod, pic_name):
         print("cron start")
         w = WeiBo(self.username, self.password)
-        m = mod_class_name()
+        m = mod_class_name(mod, pic_name)
         content = m.make_content()
         pic_id = w.upload_pic("pic/%s.jpg" % pic_name)
         w.original_weibo(content, pic_id)
@@ -67,14 +67,15 @@ def main():
     t = time_deal("15282343727", "162162162")
     m = '0-59/' + str(randint(5,10))
     scheduler = BlockingScheduler()
-    scheduler.add_job(t.get_and_dom, 'cron', hour='0-6', minute='0-59/20')  # 储存
-    scheduler.add_job(t.forward, 'cron', hour='0-23/2', minute=m)  # 转发
-    scheduler.add_job(t.send_origin, 'cron', args=(one_word, "one_word"), hour=8, minute=1)  # 一言
-    scheduler.add_job(t.send_origin, 'cron', args=(get_weather, "weather"), hour=6, minute=1)  # 天气
-    scheduler.add_job(t.send_origin, 'cron', args=(mie_word, "mie_word"), hour=22, minute=1)  # 咩语
-    scheduler.add_job(t.send_origin, 'cron', args=(recommend_food, "food"), hour=11, minute=1)  # 美食推荐
-    scheduler.add_job(t.send_origin, 'cron', args=(daily_news, "news"), hour=9, minute=1)  # 每日国际视野
-    scheduler.add_job(t.send_origin, 'cron', args=(history_of_today, "news"), hour=10, minute=1)  # 历史上的今天
+    # scheduler.add_job(t.get_and_dom, 'cron', hour='0-6', minute='0-59/20')  # 储存
+    # scheduler.add_job(t.forward, 'cron', hour='0-23/2', minute=m)  # 转发
+    # scheduler.add_job(t.send_origin, 'cron', args=(one_word, "一言", "one_word"), hour=8, minute=1)  # 一言
+    # scheduler.add_job(t.send_origin, 'cron', args=(get_weather, "天气", "weather"), hour=6, minute=1)  # 天气
+    # scheduler.add_job(t.send_origin, 'cron', args=(mie_word, "咩语", "mie_word"), hour=22, minute=1)  # 咩语
+    # scheduler.add_job(t.send_origin, 'cron', args=(recommend_food, "美食推荐", "food"), hour=11, minute=1)  # 美食推荐
+    # scheduler.add_job(t.send_origin, 'cron', args=(daily_news, "每日国际视野", "news"), hour=9, minute=1)  # 每日国际视野
+    # scheduler.add_job(t.send_origin, 'cron', args=(history_of_today, "历史上的今天", "news"), hour=10, minute=1)  # 历史上的今天
+    scheduler.add_job(t.send_origin, 'cron', args=(recommend_food, "美食推荐", "food"), hour=22, minute=46)  # 美食推荐
     scheduler.start()
 
 
