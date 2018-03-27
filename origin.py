@@ -164,7 +164,7 @@ class daily_news(origin_weibo):  # 每日新闻
         return True
 
 
-class history_of_today(origin_weibo):
+class history_of_today(origin_weibo):  # 历史上的今天
     
     def get_content(self):
         headers = {'User-Agent': 'Mozilla/5.0 (Linux; Android 7.0; SM-G935P Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.92 Mobile Safari/537.36'}
@@ -179,4 +179,4 @@ class history_of_today(origin_weibo):
         return content
 
     def get_pic(self):
-        return None
+        pass

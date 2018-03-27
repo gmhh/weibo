@@ -74,7 +74,7 @@ def main():
     scheduler.add_job(t.send_origin, 'cron', args=(mie_word, "咩语", "mie_word"), hour=22, minute=1)  # 咩语
     scheduler.add_job(t.send_origin, 'cron', args=(recommend_food, "美食推荐", "food"), hour=11, minute=1)  # 美食推荐
     scheduler.add_job(t.send_origin, 'cron', args=(daily_news, "每日国际视野", "news"), hour=9, minute=1)  # 每日国际视野
-    scheduler.add_job(t.send_origin, 'cron', args=(history_of_today, "历史上的今天", "news"), hour=10, minute=1)  # 历史上的今天
+    scheduler.add_job(t.send_origin, 'cron', args=(history_of_today, "历史上的今天", "history"), hour=10, minute=1)  # 历史上的今天
     scheduler.start()
 
 
