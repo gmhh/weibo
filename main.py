@@ -5,6 +5,7 @@ from queue import Queue
 from apscheduler.schedulers.blocking import BlockingScheduler
 from random import randint
 from origin import *
+import os
 
 
 class time_deal():
@@ -64,7 +65,9 @@ class time_deal():
         w.original_weibo(content, pic_id)
 
 def main():
-    t = time_deal("15282343727", "162162162")
+    weibo_username = os.getenv("weibo_username")
+    weibo_password = os.getpassword("weibo_username")
+    t = time_deal(weibo_username, weibo_password)
     m = '0-59/' + str(randint(5,10))
     scheduler = BlockingScheduler()
     scheduler.add_job(t.get_and_dom, 'cron', hour='0-6', minute='0-59/20')  # 储存
