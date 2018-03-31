@@ -163,7 +163,7 @@ class WeiBo(object):
         url = "https://m.weibo.cn/api/statuses/repost"
         data = {"id": weibo["weibo_content_id"], "content": content, "mid": weibo["mid"], "st": st}
         r = self.s.post(url, data=data, headers=self.headers, cookies=self.cookies)
-        print(r.text)
+        # print(r.text)
         try:
             if r.json().get("ok") == 1:
                 print("转发成功")
