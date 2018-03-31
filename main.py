@@ -66,7 +66,7 @@ class time_deal():
 
 def main():
     weibo_username = os.getenv("weibo_username")
-    weibo_password = os.getpassword("weibo_username")
+    weibo_password = os.getenv("weibo_password")
     t = time_deal(weibo_username, weibo_password)
     m = '0-59/' + str(randint(5,10))
     scheduler = BlockingScheduler()
