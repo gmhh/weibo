@@ -77,6 +77,7 @@ class WeiboHandle(object):
 
     def get_followed_from_database(self):
         session = self.Session()
+        print(self.uid)
         follows = session.query(WeiboFollow).filter_by(weibo_user_id=self.uid).all()
         uids = []
         for follow in follows:
