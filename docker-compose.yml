@@ -3,4 +3,6 @@ q:
  volumes:
   - /home/ubuntu/weibo/:/app
   - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime
+ env_file:
+  - /etc/profile
 
