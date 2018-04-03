@@ -219,7 +219,10 @@ class WeiBo(object):
         headers.pop("Content-Type")  # 这里删除content-type让requests自己生成
         url = "https://m.weibo.cn/api/statuses/uploadPic"
         st = self.get_st()
-        files = {"pic": (pic_path, open(pic_path, "rb").read(), "image/jpeg")}
+        try:
+            files = {"pic": (pic_path, open(pic_path, "rb").read(), "image/jpeg")}
+        except Exception:
+            return None
         data = {"type": "json", "st": st}
         r = self.s.post(url, data=data, files=files, headers=self.headers, cookies=self.cookies)
         try:
