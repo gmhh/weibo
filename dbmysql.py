@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, Integer, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
 
 
-engine = create_engine("mysql+pymysql://weibo:lzjlzj123@139.199.66.15/weibodb?charset=utf8", pool_size=100)
+engine = create_engine("mysql+pymysql://weibo:123456@localhost/weibodb?charset=utf8", pool_size=100)
 Base = declarative_base(engine)
 
 
